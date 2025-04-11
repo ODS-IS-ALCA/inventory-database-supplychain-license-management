@@ -1,0 +1,13 @@
+{
+    "name": "traceablity-mock",
+    "version": "1.0.0",
+    "description": "Mock for Traceablity System",
+    "main": "app.js",
+    "scripts": {
+    },
+    "author": "Huimin Han",
+    "license": "MIT",
+    "dependencies": {
+      "express": "^4.13.3"
+    }
+  }

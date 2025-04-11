@@ -1,0 +1,1542 @@
+
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.10.3/swagger-ui.css" >
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.10.3/index.css" >
+    <style>
+      .topbar {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@5.10.3/swagger-ui-bundle.js"> </script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.10.3/swagger-ui-standalone-preset.js"> </script>
+    <script>
+     const spec=
+     {
+  "openapi": "3.0.2",
+  "info": {
+    "title": "データスペース API",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "原単位データベース管理システム - ライセンス管理"
+    }
+  ],
+  "paths": {
+    "/license/endUser/{endUserId}": {
+      "post": {
+        "tags": [
+          "原単位データベース管理システム - ライセンス管理"
+        ],
+        "summary": "使用者情報更新API",
+        "description": "[詳細説明]\n* 使用者情報識別子を基に、使用者情報の約款同意ステータスの更新を行う。\n",
+        "parameters": [
+          {
+            "name": "endUserId",
+            "in": "path",
+            "description": "使用者情報識別子",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "更新する使用者情報",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "agreeStatus"
+                ],
+                "properties": {
+                  "agreeStatus": {
+                    "type": "boolean",
+                    "description": "約款同意ステータス / true: 約款に同意, false: 約款に同意しない",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新結果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "result"
+                  ],
+                  "properties": {
+                    "result": {
+                      "description": "処理可否 / true: 処理に成功, false: 処理に失敗",
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "HTTPステータスコードが2xx以外の場合、エラー内容詳細を表す",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "errors"
+                      ],
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "minLength": 1,
+                          "description": "1件以上のエラー詳細情報を表す",
+                          "items": {
+                            "type": "object",
+                            "description": "エラー内容詳細",
+                            "required": [
+                              "errorCode",
+                              "errorDescription"
+                            ],
+                            "properties": {
+                              "errorCode": {
+                                "type": "string",
+                                "maxLength": 20
+                              },
+                              "errorDescription": {
+                                "type": "string",
+                                "maxLength": 255
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "EIDBECL001": {
+                    "summary": "必須エラー",
+                    "description": "* {0} : 項目名\n",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL001",
+                          "errorDescription": "{0} is a required item."
+                        }
+                      ]
+                    }
+                  },
+                  "EIDBECL003": {
+                    "summary": "不正値エラー",
+                    "description": "* {0} : 項目名  \n  ※ 入力項目のEnumに空文字（\"\"）を指定した場合も当エラーとなります。    \n",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL003",
+                          "errorDescription": "The value in {0} is invalid."
+                        }
+                      ]
+                    }
+                  },
+                  "EIDBECL004": {
+                    "summary": "事業者情報存在チェックエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL004",
+                          "errorDescription": "Operator ID in the request parameter does not exist."
+                        }
+                      ]
+                    }
+                  },
+                  "EIDBECL008": {
+                    "summary": "DB使用者情報存在チェックエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL008",
+                          "errorDescription": "DBUsage ID in the request parameter does not exist."
+                        }
+                      ]
+                    }
+                  },
+                  "EIDBECL009": {
+                    "summary": "使用者存在チェックエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL009",
+                          "errorDescription": "The End user ID in the request parameter does not exist."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "想定外のエラー",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "エラー内容詳細",
+                        "required": [
+                          "errorCode",
+                          "errorDescription"
+                        ],
+                        "properties": {
+                          "errorCode": {
+                            "type": "string",
+                            "maxLength": 20
+                          },
+                          "errorDescription": {
+                            "type": "string",
+                            "maxLength": 255
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "EIDBEC0099": {
+                    "summary": "システムエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBEC0099",
+                          "errorDescription": "System error occurred. Please contact system administrator."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/license/endUser/{operatorId}": {
+      "get": {
+        "tags": [
+          "原単位データベース管理システム - ライセンス管理"
+        ],
+        "summary": "使用者情報取得API",
+        "description": "[詳細説明]\n* 事業者識別子（内部）に紐付く使用者情報一覧を取得する。\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "operatorId",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "required": true,
+            "description": "事業者識別子（内部）"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "使用者情報一覧",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "endUserId",
+                      "agreeStatus",
+                      "databaseUseInfo"
+                    ],
+                    "properties": {
+                      "endUserId": {
+                        "description": "使用者情報識別子",
+                        "type": "string",
+                        "example": "2680ed32-19a3-435b-a094-23ff43aaa611",
+                        "format": "uuid",
+                        "maxLength": 36
+                      },
+                      "agreeStatus": {
+                        "description": "約款同意ステータス / true: 約款に同意, false: 約款に同意しない",
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "databaseUseInfo": {
+                        "type": "object",
+                        "description": "原単位データベース使用情報",
+                        "required": [
+                          "dbUsageId",
+                          "name",
+                          "version",
+                          "licenseInfo",
+                          "expiredDate",
+                          "usageStatus"
+                        ],
+                        "properties": {
+                          "dbUsageId": {
+                            "type": "string",
+                            "description": "原単位データベース使用情報識別子",
+                            "format": "uuid",
+                            "maxLength": 36
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "原単位データベース名",
+                            "maxLength": 255,
+                            "example": "IDEA"
+                          },
+                          "version": {
+                            "type": "string",
+                            "description": "バージョン",
+                            "maxLength": 255,
+                            "example": "3.4.0"
+                          },
+                          "licenseInfo": {
+                            "type": "string",
+                            "description": "ライセンス情報",
+                            "maxLength": 255,
+                            "example": "TBD"
+                          },
+                          "expiredDate": {
+                            "type": "string",
+                            "description": "ライセンス有効期限",
+                            "maxLength": 10,
+                            "example": "2024-12-31"
+                          },
+                          "usageStatus": {
+                            "type": "string",
+                            "description": "原単位データベース使用ステータス情報\n\n* `valid`: 使用者および準使用者がDBを利用可能\n* `expired`: 期限切れ\n* `suspended`: システム側で停止処理\n* `invalid`: ユーザ側で申請していない場合、または途中で利用を停止した場合に指定\n",
+                            "maxLength": 10,
+                            "enum": [
+                              "valid",
+                              "expired",
+                              "suspended",
+                              "invalid"
+                            ],
+                            "example": "valid"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "HTTPステータスコードが2xx以外の場合、エラー内容詳細を表す",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "errors"
+                      ],
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "minLength": 1,
+                          "description": "1件以上のエラー詳細情報を表す",
+                          "items": {
+                            "type": "object",
+                            "description": "エラー内容詳細",
+                            "required": [
+                              "errorCode",
+                              "errorDescription"
+                            ],
+                            "properties": {
+                              "errorCode": {
+                                "type": "string",
+                                "maxLength": 20
+                              },
+                              "errorDescription": {
+                                "type": "string",
+                                "maxLength": 255
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "EIDBECL004": {
+                    "summary": "事業者存在チェックエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL004",
+                          "errorDescription": "The Operator ID in the request parameter does not exist."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "想定外のエラー",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "エラー内容詳細",
+                        "required": [
+                          "errorCode",
+                          "errorDescription"
+                        ],
+                        "properties": {
+                          "errorCode": {
+                            "type": "string",
+                            "maxLength": 20
+                          },
+                          "errorDescription": {
+                            "type": "string",
+                            "maxLength": 255
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "EIDBEC0099": {
+                    "summary": "システムエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBEC0099",
+                          "errorDescription": "System error occurred. Please contact system administrator."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/license/associateEndUser/{associateEndUserId}": {
+      "post": {
+        "tags": [
+          "原単位データベース管理システム - ライセンス管理"
+        ],
+        "summary": "準使用者情報更新API",
+        "description": "[詳細説明]\n準使用者情報識別子を基に、準使用者情報の約款同意ステータスを更新する。\n",
+        "parameters": [
+          {
+            "name": "associateEndUserId",
+            "in": "path",
+            "description": "準使用者情報識別子",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "更新する使用者情報",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "agreeStatus"
+                ],
+                "properties": {
+                  "agreeStatus": {
+                    "type": "boolean",
+                    "description": "約款同意ステータス / true: 約款に同意, false: 約款に同意しない",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新結果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "result"
+                  ],
+                  "properties": {
+                    "result": {
+                      "description": "処理可否 / true: 処理に成功, false: 処理に失敗",
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "HTTPステータスコードが2xx以外の場合、エラー内容詳細を表す",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "errors"
+                      ],
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "minLength": 1,
+                          "description": "1件以上のエラー詳細情報を表す",
+                          "items": {
+                            "type": "object",
+                            "description": "エラー内容詳細",
+                            "required": [
+                              "errorCode",
+                              "errorDescription"
+                            ],
+                            "properties": {
+                              "errorCode": {
+                                "type": "string",
+                                "maxLength": 20
+                              },
+                              "errorDescription": {
+                                "type": "string",
+                                "maxLength": 255
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "EIDBECL001": {
+                    "summary": "必須エラー",
+                    "description": "* {0} : 項目名\n",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL001",
+                          "errorDescription": "{0} is a required item."
+                        }
+                      ]
+                    }
+                  },
+                  "EIDBECL003": {
+                    "summary": "不正値エラー",
+                    "description": "* {0} : 項目名  \n  ※ 入力項目のEnumに空文字（\"\"）を指定した場合も当エラーとなります。    \n",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL003",
+                          "errorDescription": "The value in {0} is invalid."
+                        }
+                      ]
+                    }
+                  },
+                  "EIDBECL010": {
+                    "summary": "準使用者存在チェックエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL010",
+                          "errorDescription": "The Associate-End-user ID in the request parameter does not exist."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "想定外のエラー",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "エラー内容詳細",
+                        "required": [
+                          "errorCode",
+                          "errorDescription"
+                        ],
+                        "properties": {
+                          "errorCode": {
+                            "type": "string",
+                            "maxLength": 20
+                          },
+                          "errorDescription": {
+                            "type": "string",
+                            "maxLength": 255
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "EIDBEC0099": {
+                    "summary": "システムエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBEC0099",
+                          "errorDescription": "System error occurred. Please contact system administrator."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/license/associateEndUser/{operatorId}": {
+      "get": {
+        "tags": [
+          "原単位データベース管理システム - ライセンス管理"
+        ],
+        "summary": "準使用者情報取得API",
+        "description": "[詳細説明]\n指定された事業者識別子（内部）に紐づく準使用者情報を取得する。\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "operatorId",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "required": true,
+            "description": "事業者識別子（内部）"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "準使用者情報",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "associateEndUserId": {
+                        "description": "準使用者情報識別子",
+                        "type": "string",
+                        "example": "2680ed32-19a3-435b-a094-23ff43aaa611",
+                        "format": "uuid",
+                        "maxLength": 36
+                      },
+                      "agreeStatus": {
+                        "description": "約款同意ステータス / true: 約款に同意, false: 約款に同意しない",
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "databaseUseInfo": {
+                        "type": "object",
+                        "description": "原単位データベース使用情報",
+                        "required": [
+                          "dbUsageId",
+                          "name",
+                          "version",
+                          "licenseInfo",
+                          "expiredDate",
+                          "usageStatus"
+                        ],
+                        "properties": {
+                          "dbUsageId": {
+                            "type": "string",
+                            "description": "原単位データベース使用情報識別子",
+                            "format": "uuid",
+                            "maxLength": 36
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "原単位データベース名",
+                            "maxLength": 255,
+                            "example": "IDEA"
+                          },
+                          "version": {
+                            "type": "string",
+                            "description": "バージョン",
+                            "maxLength": 255,
+                            "example": "3.4.0"
+                          },
+                          "licenseInfo": {
+                            "type": "string",
+                            "description": "ライセンス情報",
+                            "maxLength": 255,
+                            "example": "TBD"
+                          },
+                          "expiredDate": {
+                            "type": "string",
+                            "description": "ライセンス有効期限",
+                            "maxLength": 10,
+                            "example": "2024-12-31"
+                          },
+                          "usageStatus": {
+                            "type": "string",
+                            "description": "原単位データベース使用ステータス情報\n\n* `valid`: 使用者および準使用者がDBを利用可能\n* `expired`: 期限切れ\n* `suspended`: システム側で停止処理\n* `invalid`: ユーザ側で申請していない場合、または途中で利用を停止した場合に指定\n",
+                            "maxLength": 10,
+                            "enum": [
+                              "valid",
+                              "expired",
+                              "suspended",
+                              "invalid"
+                            ],
+                            "example": "valid"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "HTTPステータスコードが2xx以外の場合、エラー内容詳細を表す",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "errors"
+                      ],
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "minLength": 1,
+                          "description": "1件以上のエラー詳細情報を表す",
+                          "items": {
+                            "type": "object",
+                            "description": "エラー内容詳細",
+                            "required": [
+                              "errorCode",
+                              "errorDescription"
+                            ],
+                            "properties": {
+                              "errorCode": {
+                                "type": "string",
+                                "maxLength": 20
+                              },
+                              "errorDescription": {
+                                "type": "string",
+                                "maxLength": 255
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "EIDBECL004": {
+                    "summary": "事業者存在チェックエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL004",
+                          "errorDescription": "The Operator ID in the request parameter does not exist."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "想定外のエラー",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "エラー内容詳細",
+                        "required": [
+                          "errorCode",
+                          "errorDescription"
+                        ],
+                        "properties": {
+                          "errorCode": {
+                            "type": "string",
+                            "maxLength": 20
+                          },
+                          "errorDescription": {
+                            "type": "string",
+                            "maxLength": 255
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "EIDBEC0099": {
+                    "summary": "システムエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBEC0099",
+                          "errorDescription": "System error occurred. Please contact system administrator."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/license/auth/endUser/{operatorId}": {
+      "post": {
+        "tags": [
+          "原単位データベース管理システム - ライセンス管理"
+        ],
+        "summary": "使用者ライセンス認証API",
+        "description": "[詳細説明]\n* 指定された事業者識別子（内部）の使用者ライセンスの認証を行う。\n* 対象の原単位データベースにおいてライセンス有効期間内かつ約款同意済の場合はアクセストークンを返却する。\n",
+        "parameters": [
+          {
+            "name": "operatorId",
+            "in": "path",
+            "description": "事業者識別子（内部）",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "アクセストークン",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "description": "アクセストークン",
+                      "type": "string",
+                      "maxLength": 300,
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMTIzNDU2Ny0xMjM0LTEyMzQtMTIzNC0xMjM0NTY3ODkwMTIiLCJpc1ByaW1hcnlVc2VyIjpmYWxzZSwiaWF0IjoxNzMxNzYyNTc1LCJleHAiOjE3MzE4NDg5NzV9.tWFA8xup8b-98Ep0D_aqj_si72Cc_llXmFZAoIemWdQ12"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "認証失敗",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "errors"
+                      ],
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "minLength": 1,
+                          "description": "1件以上のエラー詳細情報を表す",
+                          "items": {
+                            "type": "object",
+                            "description": "エラー内容詳細",
+                            "required": [
+                              "errorCode",
+                              "errorDescription"
+                            ],
+                            "properties": {
+                              "errorCode": {
+                                "type": "string",
+                                "maxLength": 20
+                              },
+                              "errorDescription": {
+                                "type": "string",
+                                "maxLength": 255
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "EIDBECL005": {
+                    "summary": "使用者ライセンス認証失敗",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL005",
+                          "errorDescription": "License authentication failed."
+                        }
+                      ]
+                    }
+                  },
+                  "EIDBECL011": {
+                    "summary": "使用者ライセンス有効期限切れ",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL011",
+                          "errorDescription": "License expired."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "想定外のエラー",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "エラー内容詳細",
+                        "required": [
+                          "errorCode",
+                          "errorDescription"
+                        ],
+                        "properties": {
+                          "errorCode": {
+                            "type": "string",
+                            "maxLength": 20
+                          },
+                          "errorDescription": {
+                            "type": "string",
+                            "maxLength": 255
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "EIDBEC0099": {
+                    "summary": "システムエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBEC0099",
+                          "errorDescription": "System error occurred. Please contact system administrator."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/license/auth/associateEndUser/{operatorId}": {
+      "post": {
+        "tags": [
+          "原単位データベース管理システム - ライセンス管理"
+        ],
+        "summary": "準使用者ライセンス認証API",
+        "description": "[詳細説明]\n指定された事業者識別子に紐づき準使用者のライセンス認証を行う。\n補足: \n* 取引関係識別子をもとに使用可能な原単位データベース一覧を特定する。\n* 1つ以上の約款同意済で、有効な原単位データベースが存在する場合にはアクセストークンを返却する。\n* 最初に本APIを呼び出したタイミングでは、各原単位データベースに対する準使用者の約款同意ステータスはすべてfalseとなるので、レスポンス415を返す。このあと準使用者情報更新で1つ以上の原単位データベースへの約款同意ステータスをtrueに変更するとアクセストークンが得られる。\n* 施策時点の留意点\n  * トレーサビリティ管理システムに取引関係識別子を渡して使用者となりえる事業者を特定する部分は試作時点ではモックを使用している。\n  * モックでは、使用者となり得る事業者識別子（内部）として以下を返却する。\n    * b1234567-1234-1234-1234-111111111111\n    * b1234567-1234-1234-1234-222222222222\n    * b1234567-1234-1234-1234-333333333333\n    * b1234567-1234-1234-1234-444444444444\n    * b1234567-1234-1234-1234-555555555555\n    * b1234567-1234-1234-1234-666666666666\n    + b1234567-1234-1234-1234-777777777777\n    + b1234567-1234-1234-1234-888888888888\n    + b1234567-1234-1234-1234-999999999999\n",
+        "parameters": [
+          {
+            "name": "operatorId",
+            "in": "path",
+            "description": "事業者識別子（内部）",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "取引関係情報",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "tradeId"
+                ],
+                "properties": {
+                  "tradeId": {
+                    "type": "string",
+                    "description": "取引関係情報識別子",
+                    "example": "b1234567-1234-1234-1234-123456789012",
+                    "maxLength": 36,
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "アクセストークン",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "description": "アクセストークン",
+                      "type": "string",
+                      "maxLength": 255,
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMTIzNDU2Ny0xMjM0LTEyMzQtMTIzNC0xMjM0NTY3ODkwMTIiLCJpc1ByaW1hcnlVc2VyIjpmYWxzZSwiaWF0IjoxNzMxNzYyNTc1LCJleHAiOjE3MzE4NDg5NzV9.tWFA8xup8b-98Ep0D_aqj_si72Cc_llXmFZAoIemWdQ12"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "認証失敗",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "errors"
+                      ],
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "minLength": 1,
+                          "description": "1件以上のエラー詳細情報を表す",
+                          "items": {
+                            "type": "object",
+                            "description": "エラー内容詳細",
+                            "required": [
+                              "errorCode",
+                              "errorDescription"
+                            ],
+                            "properties": {
+                              "errorCode": {
+                                "type": "string",
+                                "maxLength": 20
+                              },
+                              "errorDescription": {
+                                "type": "string",
+                                "maxLength": 255
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "EIDBECL006": {
+                    "summary": "準使用者ライセンス認証失敗",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL006",
+                          "errorDescription": "License authentication failed."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "関連する原単位データベースライセンスに対する約款同意がすべてfalseの場合に返却",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "準使用者情報",
+                    "required": [
+                      "associateEndUserId",
+                      "agreeStatus",
+                      "databaseName",
+                      "version",
+                      "licenseInfo",
+                      "expiredDate"
+                    ],
+                    "properties": {
+                      "associateEndUserId": {
+                        "type": "string",
+                        "description": "準使用者情報識別子",
+                        "example": "b1234567-1234-1234-1234-123456789012",
+                        "maxLength": 36,
+                        "format": "uuid"
+                      },
+                      "agreeStatus": {
+                        "type": "boolean",
+                        "description": "約款同意ステータス / true: 約款に同意, false: 約款に同意しない",
+                        "example": false
+                      },
+                      "databaseName": {
+                        "type": "string",
+                        "description": "原単位データベース名",
+                        "maxLength": 255,
+                        "example": "IDEA"
+                      },
+                      "version": {
+                        "type": "string",
+                        "description": "バージョン",
+                        "maxLength": 255,
+                        "example": "2.0.0"
+                      },
+                      "licenseInfo": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "description": "ライセンス情報"
+                      },
+                      "expiredDate": {
+                        "type": "string",
+                        "description": "ライセンス有効期限",
+                        "maxLength": 10,
+                        "example": "2024-12-31"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "準使用者情報を2件返却するレスポンス例",
+                    "value": [
+                      {
+                        "associateEndUserId": "b1234567-1234-1234-1234-123456789012",
+                        "agreeStatus": false,
+                        "databaseName": "IDEA",
+                        "vesion": "2.0.0",
+                        "licenseInfo": "dummy",
+                        "expiredDate": "2024-12-31"
+                      },
+                      {
+                        "associateEndUserId": "b1234567-2222-1234-1234-123456789012",
+                        "agreeStatus": false,
+                        "databaseName": "ecoinvent",
+                        "vesion": "2.0.1",
+                        "licenseInfo": "dummy",
+                        "expiredDate": "2025-12-31"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "想定外のエラー",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "エラー内容詳細",
+                        "required": [
+                          "errorCode",
+                          "errorDescription"
+                        ],
+                        "properties": {
+                          "errorCode": {
+                            "type": "string",
+                            "maxLength": 20
+                          },
+                          "errorDescription": {
+                            "type": "string",
+                            "maxLength": 255
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "EIDBEC0099": {
+                    "summary": "システムエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBEC0099",
+                          "errorDescription": "System error occurred. Please contact system administrator."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/license/auth/availabledbs": {
+      "get": {
+        "tags": [
+          "原単位データベース管理システム - ライセンス管理"
+        ],
+        "summary": "使用可能原単位データベース一覧取得API",
+        "description": "[詳細説明]\n* アクセストークンをもとに使用可能な原単位データベース一覧を取得する。\n\n使用用途の補足\n* 認証済ユーザが自身が使用可能な原単位データベースの一覧を確認する。\n",
+        "parameters": [
+          {
+            "name": "accessToken",
+            "in": "header",
+            "description": "アクセストークン",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 300
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "使用可能原単位データベース情報一覧",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "availableDbs": {
+                      "type": "array",
+                      "items": {
+                        "description": "使用可能原単位データベース情報",
+                        "type": "object",
+                        "required": [
+                          "databaseName",
+                          "version"
+                        ],
+                        "properties": {
+                          "databaseName": {
+                            "type": "string",
+                            "description": "原単位データベース名",
+                            "maxLength": 255
+                          },
+                          "version": {
+                            "type": "string",
+                            "description": "バージョン",
+                            "maxLength": 255
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "アクセストークンが不正の場合",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "errors"
+                      ],
+                      "properties": {
+                        "errors": {
+                          "type": "array",
+                          "minLength": 1,
+                          "description": "1件以上のエラー詳細情報を表す",
+                          "items": {
+                            "type": "object",
+                            "description": "エラー内容詳細",
+                            "required": [
+                              "errorCode",
+                              "errorDescription"
+                            ],
+                            "properties": {
+                              "errorCode": {
+                                "type": "string",
+                                "maxLength": 20
+                              },
+                              "errorDescription": {
+                                "type": "string",
+                                "maxLength": 255
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "EIDBECL007": {
+                    "summary": "アクセストークンが不正",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBECL007",
+                          "errorDescription": "Invalid Token."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "想定外のエラー",
+            "headers": {
+              "X-Track": {
+                "description": "REST API呼び出しでエラーなどが発生した時に問い合わせするための識別子",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "エラー内容詳細",
+                        "required": [
+                          "errorCode",
+                          "errorDescription"
+                        ],
+                        "properties": {
+                          "errorCode": {
+                            "type": "string",
+                            "maxLength": 20
+                          },
+                          "errorDescription": {
+                            "type": "string",
+                            "maxLength": 255
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "EIDBEC0099": {
+                    "summary": "システムエラー",
+                    "value": {
+                      "errors": [
+                        {
+                          "errorCode": "EIDBEC0099",
+                          "errorDescription": "System error occurred. Please contact system administrator."
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "x-api-key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "本サービスから払い出されたAPIキー"
+      },
+      "Authorization": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "アクセストークン発行APIで発行したアクセストークン"
+      }
+    }
+  }
+}
+
+      window.onload = function() {
+        const ui = SwaggerUIBundle({
+          spec: spec,
+          dom_id: '#swagger-ui',
+          deepLinking: true,
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset
+          ],
+          plugins: [
+            SwaggerUIBundle.plugins.DownloadUrl
+          ],
+          layout: "StandaloneLayout"
+        })
+     
+        window.ui = ui
+      }
+  </script>
+  </body>
+</html>

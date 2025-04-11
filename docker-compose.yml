@@ -1,0 +1,58 @@
+services:
+  back:
+    build: ./license-management
+    volumes:
+      - ./license-management:/app:cached
+    command: sh -c "cd license-management-app && npm install && npm run start"
+    restart: always
+    ports:
+      - 3001:3001
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:14.0
+    container_name: database
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+      TZ: 'Asia/Tokyo'
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+  postgres-test:
+    image: postgres:14.0
+    container_name: test-database
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+      TZ: 'Asia/Tokyo'
+    ports:
+      - 5433:5432
+    volumes:
+      - ./postgres/data-test:/var/lib/postgresql/data
+  traceability:
+    build: ./traceability-mock
+    container_name: traceability
+    volumes:
+      - ./traceability-mock:/app:cached
+    command: sh -c "cd traceability-mock-app && npm install && node app.js"
+    ports:
+      - 8000:8000
+
+  # デバック用 
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   restart: always
+  #   container_name: nest-pgadmin4
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+  #     - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+  #   ports:
+  #     - '5050:80'
+  #   depends_on:
+  #     - postgres
